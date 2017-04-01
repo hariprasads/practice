@@ -1,8 +1,12 @@
-import React from 'react'
+import React, { Component } from 'react'
+import Welcome from './welcome'
 
-export default function (){
-  return (
-    <h1> Hello from react</h1>
-  )
+class App extends Component {
+  render(){
+    return (
+      <Welcome />
+    )
+  }
 }
-  
+
+export default App
