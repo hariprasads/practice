@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import timezones from '../../data/timezone'
 import map from 'lodash/map'
+import classNames from 'classnames'
 
 class SignupForm extends Component {
 
@@ -11,7 +12,9 @@ class SignupForm extends Component {
       email:"",
       password: "",
       passwordconfirmation:"",
-      timezone: ""
+      timezone: "",
+      errors: {},
+      isLoading: false
     }
   }
 
@@ -23,10 +26,19 @@ class SignupForm extends Component {
 
   onSubmit(e){
     e.preventDefault()
-    console.log(this.state);
+    this.setState({
+      errors: {},
+      isLoading: true
+    })
+    this.props.userSignupRequest(this.state).then(
+      () => {},
+      ({data}) => this.setState({errors: data, isLoading: false})
+    );
   }
 
   render(){
+
+    const { errors } = this.state;
 
     const options = map(timezones, function(val,key){
       return (<option key ={key} value = {val} > {key} </option>)
@@ -37,7 +49,7 @@ class SignupForm extends Component {
       <form onSubmit = {this.onSubmit.bind(this)}>
         <h2> Join us before its too late!</h2>
 
-        <div className = "form-group">
+        <div className = {classNames("form-group", {"has-error": errors.username } ) }>
           <label className = "control-label">  Username </label>
           <input type = "text"
                  onChange = {this.onChange.bind(this)}
@@ -45,9 +57,10 @@ class SignupForm extends Component {
                  name = "username"
                  className = "form-control"
           />
+          {errors.username && <span className="help-block"> {errors.username }</span>}
         </div>
 
-        <div className = "form-group">
+        <div className = {classNames("form-group", {"has-error": errors.email } ) }>
           <label className = "control-label">  Email </label>
           <input type = "email"
                  onChange = {this.onChange.bind(this)}
@@ -55,9 +68,10 @@ class SignupForm extends Component {
                  name = "email"
                  className = "form-control"
           />
+          {errors.email && <span className="help-block"> {errors.email }</span>}
         </div>
 
-        <div className = "form-group">
+        <div className = {classNames("form-group", {"has-error": errors.password } ) }>
           <label className = "control-label">  Password </label>
           <input type = "password"
                  onChange = {this.onChange.bind(this)}
@@ -65,9 +79,10 @@ class SignupForm extends Component {
                  name = "password"
                  className = "form-control"
           />
+          {errors.password && <span className="help-block"> {errors.password }</span>}
         </div>
 
-        <div className = "form-group">
+        <div className = {classNames("form-group", {"has-error": errors.passwordconfirmation } ) }>
           <label className = "control-label">  Password Confirmation</label>
           <input type = "password"
                  onChange = {this.onChange.bind(this)}
@@ -75,9 +90,10 @@ class SignupForm extends Component {
                  name = "passwordconfirmation"
                  className = "form-control"
           />
+          {errors.passwordconfirmation && <span className="help-block"> {errors.passwordconfirmation }</span>}
         </div>
 
-        <div className = "form-group">
+        <div className = {classNames("form-group", {"has-error": errors.timezone } ) }>
           <label className = "control-label">  TimeZone</label>
           <select className = "form-control"
                   name = "timezone"
@@ -87,14 +103,19 @@ class SignupForm extends Component {
             <option value="" disabled > Choose your Timezone </option>
             {options}
           </select>
+          {errors.timezone && <span className="help-block"> {errors.timezone}</span>}
         </div>
 
         <div className = "form-group">
-          <button className="btn btn-primary btn-lg">Signup</button>
+          <button disabled = {this.state.isLoading} className="btn btn-primary btn-lg">Signup</button>
         </div>
       </form>
     )
   }
+}
+
+SignupForm.propTypes = {
+    userSignupRequest: React.PropTypes.func.isRequired
 }
 
 export default SignupForm
